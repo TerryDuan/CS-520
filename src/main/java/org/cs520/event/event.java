@@ -3,7 +3,7 @@ package org.cs520.event;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-abstract class event {
+abstract public class event {
     int ts; //global timestamp for this event inside the simulation
     String EventType;
     Dictionary<String,String> EventDetails = new Hashtable();

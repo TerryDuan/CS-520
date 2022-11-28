@@ -12,6 +12,9 @@ public class pcbEvent extends event  {
         EventDetails.put("ProcessID", processBlock.getProcessID());
     }
 
+    public pcb getProcess(){
+        return processBlock;
+    }
     public pcbEvent execute(){
         //tailored method for pcb(event), each pcb will be executed based on type (IO or CPU)
         //return next event for simulator to append to the EventDLL in main function
@@ -24,13 +27,23 @@ public class pcbEvent extends event  {
             //if current event is CPU event, we get a random number for CPU burst time and create a new IO event or Complete Event
             processBlock.setStatus("Ready");
             int execT = processBlock.getExecutionTime();
-
-            //int executeTime =
-            pcbEvent nextEvent = new pcbEvent(ts + 60, "IO", processBlock);
-            return nextEvent;
+            int ioBurstT = processBlock.getNextIOInterval();
+            execT = execT - ioBurstT;
+            if (execT > 0){
+                processBlock.setExecutionTime(execT);
+                pcbEvent nextEvent = new pcbEvent(ts + ioBurstT, "IO", processBlock);
+                return nextEvent;
+            }else{
+                //process will complete before next IO request
+                processBlock.setStatus("Complete");
+                processBlock.setExecutionTime(0);
+                pcbEvent nextEvent = new pcbEvent(ts + ioBurstT, "IO", processBlock);
+                return nextEvent;
+            }
         }else{
             processBlock.setStatus("Complete");
-            return null;
+            pcbEvent nextEvent = new pcbEvent(ts, "IO", processBlock);
+            return nextEvent;
         }
 
 

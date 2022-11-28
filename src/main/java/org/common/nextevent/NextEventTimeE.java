@@ -7,10 +7,10 @@ public class NextEventTimeE {
     double lmda;
     Random random;
 
-    public NextEventTimeE(double LAMBDA) {
+    public NextEventTimeE(double LAMBDA, int Seed) {
         lmda = LAMBDA;
         random = new Random();
-        random.setSeed(26);
+        random.setSeed(Seed);
     }
 
     public double getNextEventTime(){

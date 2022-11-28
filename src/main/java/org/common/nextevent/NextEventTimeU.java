@@ -8,11 +8,11 @@ public class NextEventTimeU {
     double min;
     double max;
 
-    public NextEventTimeU (double MIN, double MAX){
+    public NextEventTimeU (double MIN, double MAX, int Seed){
         min = MIN;
         max = MAX;
         random = new Random();
-        random.setSeed(19);
+        random.setSeed(Seed);
     }
 
     public double getNextEventTime(){

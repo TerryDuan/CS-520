@@ -12,13 +12,13 @@ public class pcb {
     NextEventTimeU execTimeGeneratorU;
     NextEventTimeE ioBurstTimeGenerator;
 
-    public pcb(String id, int execT, double ioT){
+    public pcb(String id, int execT, double ioT, int Seed){
         ProcessID = id;
         ExecutionTime = execT;
         ioIntervalLambda = ioT;
-        Status = "ReadyCPU";
+        Status = "Ready";
         //We need to initialize the random time generator for each PCB (process)'s IO Burst
-        ioBurstTimeGenerator = new NextEventTimeE(ioIntervalLambda);
+        ioBurstTimeGenerator = new NextEventTimeE(ioIntervalLambda, Seed);
     }
 
     public void setStatus(String newStatus){
