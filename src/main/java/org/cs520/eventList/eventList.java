@@ -43,4 +43,7 @@ public class eventList {
         return EventDLL.poll();
     }
 
+    public event peekCurrentEvent() {
+        return EventDLL.peek();
+    }
 }

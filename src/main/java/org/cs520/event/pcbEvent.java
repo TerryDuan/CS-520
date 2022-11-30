@@ -20,7 +20,7 @@ public class pcbEvent extends event  {
         //return next event for simulator to append to the EventDLL in main function
         if (EventType == "IO"){
             //if current event is IO event, we create next CPU event for this processID and add 60ms for i/o execution
-            processBlock.setStatus("Ready");
+            processBlock.setStatus("Ready"); //always ready after IO
             pcbEvent nextEvent = new pcbEvent(ts + 60, "CPU", processBlock);
             return nextEvent;
         }else if (EventType == "CPU"){

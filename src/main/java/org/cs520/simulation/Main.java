@@ -11,6 +11,7 @@ import java.util.Queue;
 public class Main {
     public static void main(String[] args) {
         System.out.println("Start Simulation");
+        /*
         //NextEventTimeE eventTimeGenerator = new NextEventTimeE(0.03333);
         //double nextTime = eventTimeGenerator.getNextEventTime();
         //System.out.println(nextTime); //39.491732258129765
@@ -50,26 +51,72 @@ public class Main {
         System.out.println(sampleProcess.getMeanIoInterval());
         System.out.println(sampleProcess.getNextIOInterval());
         System.out.println(sampleProcess.getExecutionTime());
+        */
 
-        System.out.println("TESTING one process until process COMPLETE");
-        Queue<pcb> processQueue = new LinkedList<>();
-        sampleProcess = new pcb("0x00", (int) nextUTime*60000 ,0.03333 , 19); //0.0333 lambda --> avg 30
-        processQueue.add(sampleProcess);
-        sampleEvent = new pcbEvent(0,"CPU",sampleProcess);
-        sampleList = new eventList(sampleEvent);
-        while(processQueue.size() > 0){
+        /*
+        * For this simulation, we only has 1 CPU and 1 I/O device
+        * Create two EventList for CPU readyQueue and I/O readyQueue
+        * EventList has the feature to gurantee the event(item) is sorted based on simulation TS (in millisecound)
+        * While loop until both EventLists are empty (If a pcb status is complete, add no event to any queue --> gurantee stop)
+        *   in each iteration, compare the head of both queue's TS, and execute the latest most recent one.
+        *   pcbEvent.execute() return next event
+        * */
+
+        System.out.println("TESTING 2 process until process COMPLETE");
+        double nextUTime;
+        //Queue<pcb> processQueue = new LinkedList<>();
+        Queue<pcb> readyQueue = new LinkedList<>();
+        Queue<pcb> ioQueue = new LinkedList<>();
+        NextEventTimeU eventTimeGeneratorU = new NextEventTimeU(2,4, 23);
+
+        //adding process
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess1 = new pcb("0x01", (int) nextUTime*60000 ,0.03333 , 19); //0.0333 lambda --> avg 30
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess2 = new pcb("0x02", (int) nextUTime*60000 ,0.025 , 23); //0.025 lambda --> avg 35
+        readyQueue.add(sampleProcess1);
+        readyQueue.add(sampleProcess2);
+
+
+        event sampleEvent = new pcbEvent(0,"CPU",sampleProcess1);
+        eventList sampleList = new eventList(sampleEvent);
+        System.out.println(readyQueue.size());
+
+        pcbEvent currentEvent;
+        pcbEvent nextEvent;
+        pcb currentProcess;
+        String currentProcessID;
+        while(sampleList.getEventSize() > 0){
             currentEvent = (pcbEvent) sampleList.processCurrentEvent();
+            currentProcess = currentEvent.getProcess();
+            currentProcessID = currentProcess.getProcessID();
+
+            System.out.print("Current TS ");
             System.out.println(currentEvent.getTS());
-            System.out.println(currentEvent.getEventType());
-            sampleProcess = currentEvent.getProcess();
-            System.out.println(sampleProcess.getStatus());
-            System.out.println(sampleProcess.getExecutionTime());
-            if(sampleProcess.getStatus() == "Complete"){
-                processQueue.removeIf(e -> (e.getStatus() == "Complete"));
+            //System.out.println(currentEvent.getEventType());
+            System.out.print("Current Process ");
+            System.out.println(currentProcess.getProcessID());
+            System.out.println(currentProcess.getStatus());
+            System.out.println(currentProcess.getExecutionTime());
+
+            if(currentProcess.getStatus() == "Complete"){
+                System.out.println(currentProcessID);
+                System.out.println(processQueue.size());
+                String finalCurrentProcessID = currentProcessID;
+                processQueue.removeIf(e -> (e.getProcessID() == finalCurrentProcessID));
             }
-            nextSampleEvent = currentEvent.execute();
-            sampleList.addEvent(nextSampleEvent);
+
+            nextEvent = currentEvent.execute();
+
+            //if current is IO, next Event is CPU --> remove process from ioQueue, add nextEvent and add current process to readyQueue
+            //if current is CPU, next Event Status is Complete --> remove process from readyQueue
+            //if current is CPU, next Event Status is Ready --> remove process from readyQueue, add nextEvent and add current process to ioQueue
+
+
+            sampleList.addEvent(nextEvent);
         }
+
+
 
     }
 }
