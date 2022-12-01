@@ -8,13 +8,13 @@ import java.util.Comparator;
 import org.cs520.event.event;
 import org.cs520.event.pcbEvent;
 
-public class eventList {
+abstract public class eventList {
     LinkedList<event> EventDLL = new LinkedList<event>();
 
     public eventList(event firstEvent){
         EventDLL.add(0, firstEvent);
     }
-
+    public eventList(){};
     public int getEventSize() {
         return EventDLL.size();
     }

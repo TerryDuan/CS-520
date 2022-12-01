@@ -21,23 +21,25 @@ public class pcbEvent extends event  {
         if (EventType == "IO"){
             //if current event is IO event, we create next CPU event for this processID and add 60ms for i/o execution
             processBlock.setStatus("Ready"); //always ready after IO
-            pcbEvent nextEvent = new pcbEvent(ts + 60, "CPU", processBlock);
+            eventTime = 60;
+            pcbEvent nextEvent = new pcbEvent(ts + eventTime, "CPU", processBlock);//add 60s for IO time
             return nextEvent;
         }else if (EventType == "CPU"){
             //if current event is CPU event, we get a random number for CPU burst time and create a new IO event or Complete Event
             processBlock.setStatus("Ready");
             int execT = processBlock.getExecutionTime();
             int ioBurstT = processBlock.getNextIOInterval();
-            execT = execT - ioBurstT;
+            eventTime = ioBurstT;
+            execT = execT - eventTime;
             if (execT > 0){
                 processBlock.setExecutionTime(execT);
-                pcbEvent nextEvent = new pcbEvent(ts + ioBurstT, "IO", processBlock);
+                pcbEvent nextEvent = new pcbEvent(ts + eventTime, "IO", processBlock);
                 return nextEvent;
             }else{
                 //process will complete before next IO request
                 processBlock.setStatus("Complete");
                 processBlock.setExecutionTime(0);
-                pcbEvent nextEvent = new pcbEvent(ts + ioBurstT, "IO", processBlock);
+                pcbEvent nextEvent = new pcbEvent(ts + eventTime, "IO", processBlock);
                 return nextEvent;
             }
         }else{

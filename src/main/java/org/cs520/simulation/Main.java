@@ -65,8 +65,8 @@ public class Main {
         System.out.println("TESTING 2 process until process COMPLETE");
         double nextUTime;
         //Queue<pcb> processQueue = new LinkedList<>();
-        Queue<pcb> readyQueue = new LinkedList<>();
-        Queue<pcb> ioQueue = new LinkedList<>();
+        pcbEventList readyQueue = new pcbEventList();
+        //Queue<pcb> ioQueue = new LinkedList<>();
         NextEventTimeU eventTimeGeneratorU = new NextEventTimeU(2,4, 23);
 
         //adding process
@@ -74,47 +74,40 @@ public class Main {
         pcb sampleProcess1 = new pcb("0x01", (int) nextUTime*60000 ,0.03333 , 19); //0.0333 lambda --> avg 30
         nextUTime = eventTimeGeneratorU.getNextEventTime();
         pcb sampleProcess2 = new pcb("0x02", (int) nextUTime*60000 ,0.025 , 23); //0.025 lambda --> avg 35
-        readyQueue.add(sampleProcess1);
-        readyQueue.add(sampleProcess2);
+        pcbEvent process1event = new pcbEvent(0,"CPU", sampleProcess1);
+        //int ioBurst1 = sampleProcess1.getNextIOInterval();
+        pcbEvent process2event = new pcbEvent(0, "CPU", sampleProcess2);
+        readyQueue.addEvent(process1event,true);
+        readyQueue.addEvent(process2event,true);
 
-
-        event sampleEvent = new pcbEvent(0,"CPU",sampleProcess1);
-        eventList sampleList = new eventList(sampleEvent);
-        System.out.println(readyQueue.size());
-
+        int clock = 0;
         pcbEvent currentEvent;
         pcbEvent nextEvent;
-        pcb currentProcess;
-        String currentProcessID;
-        while(sampleList.getEventSize() > 0){
-            currentEvent = (pcbEvent) sampleList.processCurrentEvent();
-            currentProcess = currentEvent.getProcess();
-            currentProcessID = currentProcess.getProcessID();
+        pcbEvent tailEvent;
+        int CPUtime;
+        while(clock < 2000){
+            System.out.println("TS: " + clock);
+            currentEvent = (pcbEvent) readyQueue.peekCurrentEvent();
+            if(clock == currentEvent.getTS()){
+                System.out.println("----time to process current event at head of queue");
+                currentEvent = (pcbEvent) readyQueue.processCurrentEvent();
+                System.out.println("----current event " + currentEvent.getEventType());
+                System.out.println("----current event process " + currentEvent.getProcess().getProcessID());
+                nextEvent = currentEvent.execute();
+                CPUtime = nextEvent.getEventTime();
+                System.out.println("----next event " + nextEvent.getEventType());
+                System.out.println("----next event TS " + nextEvent.getTS());
+                tailEvent = readyQueue.peekLastEvent();
 
-            System.out.print("Current TS ");
-            System.out.println(currentEvent.getTS());
-            //System.out.println(currentEvent.getEventType());
-            System.out.print("Current Process ");
-            System.out.println(currentProcess.getProcessID());
-            System.out.println(currentProcess.getStatus());
-            System.out.println(currentProcess.getExecutionTime());
-
-            if(currentProcess.getStatus() == "Complete"){
-                System.out.println(currentProcessID);
-                System.out.println(processQueue.size());
-                String finalCurrentProcessID = currentProcessID;
-                processQueue.removeIf(e -> (e.getProcessID() == finalCurrentProcessID));
             }
 
-            nextEvent = currentEvent.execute();
-
-            //if current is IO, next Event is CPU --> remove process from ioQueue, add nextEvent and add current process to readyQueue
-            //if current is CPU, next Event Status is Complete --> remove process from readyQueue
-            //if current is CPU, next Event Status is Ready --> remove process from readyQueue, add nextEvent and add current process to ioQueue
-
-
-            sampleList.addEvent(nextEvent);
+            //early stop:
+            if(readyQueue.getEventSize() == 0){
+                break;
+            }
+            clock = clock + 1;
         }
+
 
 
 
