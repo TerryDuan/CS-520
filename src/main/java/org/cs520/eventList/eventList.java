@@ -9,23 +9,22 @@ import org.cs520.event.event;
 import org.cs520.event.pcbEvent;
 
 abstract public class eventList {
-    LinkedList<event> EventDLL = new LinkedList<event>();
+    protected LinkedList<event> EventDLL = new LinkedList<event>();
 
     public eventList(event firstEvent){
-        EventDLL.add(0, firstEvent);
+        this.EventDLL.add(0, firstEvent);
     }
     public eventList(){};
-    public int getEventSize() {
-        return EventDLL.size();
-    }
+    abstract public int getEventSize() ;
+
 
     public void addEvent(event newEvent) {
         //add event based on ts
         int ts = newEvent.getTS();
         //scan the EventDLL and insert the event to 'right position'
-        EventDLL.add(newEvent);//EventDLL.add(ts, event);
+        this.EventDLL.add(newEvent);//EventDLL.add(ts, event);
         //Whenever we add new future event, we need to sort remaining list
-        Collections.sort(EventDLL, new Comparator<event>() {
+        Collections.sort(this.EventDLL, new Comparator<event>() {
                     @Override
                     public int compare(event s1, event s2) {
                         return s1.getTS() - s2.getTS();
@@ -36,14 +35,10 @@ abstract public class eventList {
     }
 
     public event getEvent(int ts) {
-        return EventDLL.get(ts);
+        return this.EventDLL.get(ts);
     }
 
-    public event processCurrentEvent() {
-        return EventDLL.poll();
-    }
+    abstract public event processCurrentEvent();
 
-    public event peekCurrentEvent() {
-        return EventDLL.peek();
-    }
+    abstract public event peekCurrentEvent();
 }

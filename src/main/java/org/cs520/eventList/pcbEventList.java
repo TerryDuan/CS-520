@@ -1,5 +1,6 @@
 package org.cs520.eventList;
 
+import org.cs520.event.event;
 import org.cs520.event.pcbEvent;
 
 import java.util.Collections;
@@ -14,8 +15,23 @@ public class pcbEventList extends eventList{
         super();
     }
 
+    public int getEventSize() {
+        return EventDLL.size();
+    }
+
+    public LinkedList<pcbEvent> getAllEvents(){
+        //for debuging
+        return EventDLL;
+    };
+
     public pcbEvent peekLastEvent(){
         return EventDLL.peekLast();
+    }
+    public pcbEvent peekCurrentEvent() {
+        return EventDLL.peek();
+    }
+    public pcbEvent processCurrentEvent() {
+        return EventDLL.poll();
     }
 
     public void freezeEventList(int freezeT){
@@ -41,7 +57,7 @@ public class pcbEventList extends eventList{
                         }
                     }
             );
-            System.out.println("--->Event Added and reordered based on TS arrival time");
+            System.out.println("------->Event Added and reordered based on TS arrival time");
         }else{
             //SJF, add and sort by pcb's remaining execution time
             EventDLL.add(newEvent);
@@ -52,6 +68,7 @@ public class pcbEventList extends eventList{
                         }
                     }
             );
+            System.out.println("------->Event Added and reordered based on Remaining Execution time (SJF)");
         }
     }
 

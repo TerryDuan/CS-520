@@ -4,31 +4,23 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 
 abstract public class event {
-    int ts; //global timestamp for this event inside the simulation
-    int eventTime; //time needed for current event to finish
-    String EventType;
-    Dictionary<String,String> EventDetails = new Hashtable();
+    protected int ts; //global timestamp for this event inside the simulation
+    protected int eventTime; //time needed for current event to finish
+    protected String EventType;
+    protected Dictionary<String,String> EventDetails = new Hashtable();
 
     public event (int t, String Type) {
-        ts = t;
-        EventType = Type;
+        this.ts = t;
+        this.EventType = Type;
     }
 
-    public void addDetail(String Key, String Value) {
-        EventDetails.put(Key, Value);
-    }
+    abstract public void addDetail(String Key, String Value) ;
 
-    public String getDetail(String Key ) {
-        return EventDetails.get(Key);
-    }
-    public int getTS(){
-        return ts;
-    }
-    public void setTS(int newTS){ts = newTS;}
+    abstract public String getDetail(String Key ) ;
+    abstract public int getTS() ;
+    abstract public void setTS(int newTS);
 
-    public int getEventTime() {return eventTime;};
+    abstract public int getEventTime() ;
 
-    public String getEventType(){
-        return EventType;
-    }
+    abstract public String getEventType();
 }
