@@ -36,7 +36,43 @@ public class pcbEvent extends event  {
     public pcb getProcess(){
         return processBlock;
     }
-    public pcbEvent execute(){
+    public void execute(){
+        //tailored method for pcb(event), each pcb will be executed based on type (IO or CPU)
+        //return next event for simulator to append to the EventDLL in main function
+        if (EventType == "IO"){
+            //if current event is IO event, we create next CPU event for this processID and add 60ms for i/o execution
+            processBlock.setStatus("Ready"); //always ready after IO
+            this.eventTime = 60;
+            this.ts = this.ts + this.eventTime;
+            this.EventType = "CPU";
+        }else if (EventType == "CPU"){
+            //if current event is CPU event, we get a random number for CPU burst time and create a new IO event or Complete Event
+            processBlock.setStatus("Ready");
+            int execT = processBlock.getExecutionTime();
+            int ioBurstT = processBlock.getNextIOInterval();
+            this.eventTime = ioBurstT;
+            execT = execT - eventTime;
+            if (execT > 0){
+                processBlock.setExecutionTime(execT);
+                this.ts = this.ts + this.eventTime;
+                this.EventType = "IO";
+                processBlock.setExecutionTime(execT);
+            }else{
+                //process will complete before next IO request
+                processBlock.setStatus("Complete");
+                processBlock.setExecutionTime(0);
+                this.ts = this.ts + execT;
+            }
+        }else{
+            processBlock.setStatus("Complete");
+        }
+
+
+    }
+
+    /* old execute
+    *
+    * public pcbEvent execute(){
         //tailored method for pcb(event), each pcb will be executed based on type (IO or CPU)
         //return next event for simulator to append to the EventDLL in main function
         if (EventType == "IO"){
@@ -71,4 +107,5 @@ public class pcbEvent extends event  {
 
 
     }
+    * */
 }
