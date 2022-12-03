@@ -5,61 +5,29 @@ import org.cs520.event.*;
 import org.cs520.eventList.*;
 import org.cs520.pcb.*;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.io.PrintWriter;
 
 public class Main {
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
+
+        String fileName = new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date());
+        int CPU_idleTime = 0;
+        int CPU_executedProcess = 0;
+        String ScheduleAlgorithm = "SJF"; //"FCFS"
+        List<Integer> GanttChart = new ArrayList<Integer>();
+        PrintWriter writer = new PrintWriter("D:\\Files\\CS\\CS520_Project\\log\\Simulation_" + fileName + ".log", "UTF-8");
+
         System.out.println("Start Simulation");
-        /*
-        //NextEventTimeE eventTimeGenerator = new NextEventTimeE(0.03333);
-        //double nextTime = eventTimeGenerator.getNextEventTime();
-        //System.out.println(nextTime); //39.491732258129765
-        NextEventTimeU eventTimeGeneratorU = new NextEventTimeU(2,4, 23);
-        double nextUTime = eventTimeGeneratorU.getNextEventTime();
-        System.out.println(nextUTime); //3.4649813252059607
-        pcb sampleProcess = new pcb("0x00", (int) nextUTime*60000 ,0.03333 , 19); //0.0333 lambda --> avg 30
-        System.out.println("testing pcb methods");
-        System.out.println(sampleProcess.getStatus());
-        System.out.println(sampleProcess.getMeanIoInterval());
-        System.out.println(sampleProcess.getNextIOInterval());
-        System.out.println(sampleProcess.getExecutionTime());
-        System.out.println("testing event methods");
-        pcbEvent sampleEvent = new pcbEvent(0,"CPU",sampleProcess);
-        pcbEvent nextSampleEvent = sampleEvent.execute();
-        System.out.println(nextSampleEvent.getTS());
-        System.out.println(nextSampleEvent.getEventType());
-        sampleProcess = nextSampleEvent.getProcess();
-        System.out.println("next event pcb:");
-        System.out.println(sampleProcess.getStatus());
-        System.out.println(sampleProcess.getMeanIoInterval());
-        System.out.println(sampleProcess.getNextIOInterval());
-        System.out.println(sampleProcess.getExecutionTime());
-        System.out.println("texting eventList");
-        sampleProcess = new pcb("0x00", (int) nextUTime*60000 ,0.03333 , 19); //0.0333 lambda --> avg 30
-        sampleEvent = new pcbEvent(0,"CPU",sampleProcess);
-        eventList sampleList = new eventList(sampleEvent);
-        pcbEvent currentEvent = (pcbEvent) sampleList.processCurrentEvent();
-        nextSampleEvent = currentEvent.execute();
-        sampleList.addEvent(nextSampleEvent);
-        currentEvent = (pcbEvent) sampleList.processCurrentEvent();
-        System.out.println(currentEvent.getTS());
-        System.out.println(currentEvent.getEventType());
-        sampleProcess = currentEvent.getProcess();
-        System.out.println("last event pcb in eventList:");
-        System.out.println(sampleProcess.getStatus());
-        System.out.println(sampleProcess.getMeanIoInterval());
-        System.out.println(sampleProcess.getNextIOInterval());
-        System.out.println(sampleProcess.getExecutionTime());
-        */
 
         /*
         * For this simulation, we only has 1 CPU and 1 I/O device
-        * Create two (pcb)EventList for CPU readyQueue and I/O readyQueue
-        * EventList has the feature to gurantee the event(item) is sorted based on simulation TS (in millisecound)
-        * While loop until both EventLists are empty (If a pcb status is complete, add no event to any queue --> gurantee stop)
-        *   in each iteration, compare the head of both queue's TS, and execute the latest most recent one.
-        *   pcbEvent.execute() return next event
+        * Create a EventList for CPUQueue, IOQueue, CPUdevice, IOdevice
+        * Loop thru time and check if CPU and IO device is availible
         * */
 
         System.out.println("TESTING 2 process until process COMPLETE");
@@ -78,12 +46,56 @@ public class Main {
         pcb sampleProcess2 = new pcb("0x02", (int) nextUTime*60000 ,0.025 , 23); //0.025 lambda --> avg 40
         nextUTime = eventTimeGeneratorU.getNextEventTime();
         pcb sampleProcess3 = new pcb("0x03", (int) nextUTime*60000 ,0.02857 , 47); //0.02857 lambda --> avg 35
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess4 = new pcb("0x04", (int) nextUTime*60000 ,0.02222 , 51); //0.02222 lambda --> avg 45
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess5 = new pcb("0x05", (int) nextUTime*60000 ,0.02 , 53); //0.02 lambda --> avg 50
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess6 = new pcb("0x06", (int) nextUTime*60000 ,0.01818 , 61); //0.01818 lambda --> avg 55
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess7 = new pcb("0x07", (int) nextUTime*60000 ,0.01667 , 63); //0.01667 lambda --> avg 60
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess8 = new pcb("0x08", (int) nextUTime*60000 ,0.01538 , 73); //0.01538 lambda --> avg 65
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess9 = new pcb("0x09", (int) nextUTime*60000 ,0.01429 , 77); //0.01429 lambda --> avg 70
+        nextUTime = eventTimeGeneratorU.getNextEventTime();
+        pcb sampleProcess0 = new pcb("0x00", (int) nextUTime*60000 ,0.01333 , 83); //0.01333 lambda --> avg 75
+
         pcbEvent process1event = new pcbEvent(0,"CPU", sampleProcess1);
-        pcbEvent process2event = new pcbEvent(1, "CPU", sampleProcess2);
-        pcbEvent process3event = new pcbEvent(2, "CPU", sampleProcess3);
+        pcbEvent process2event = new pcbEvent(0, "CPU", sampleProcess2);
+        pcbEvent process3event = new pcbEvent(0, "CPU", sampleProcess3);
+        pcbEvent process4event = new pcbEvent(0,"CPU", sampleProcess4);
+        pcbEvent process5event = new pcbEvent(0, "CPU", sampleProcess5);
+        pcbEvent process6event = new pcbEvent(0, "CPU", sampleProcess6);
+        pcbEvent process7event = new pcbEvent(0,"CPU", sampleProcess7);
+        pcbEvent process8event = new pcbEvent(0, "CPU", sampleProcess8);
+        pcbEvent process9event = new pcbEvent(0, "CPU", sampleProcess9);
+        pcbEvent process0event = new pcbEvent(0, "CPU", sampleProcess0);
+
         readyQueue.addEvent(process1event,true);
         readyQueue.addEvent(process2event,true);
         readyQueue.addEvent(process3event,true);
+        readyQueue.addEvent(process4event,true);
+        readyQueue.addEvent(process5event,true);
+        readyQueue.addEvent(process6event,true);
+        readyQueue.addEvent(process7event,true);
+        readyQueue.addEvent(process8event,true);
+        readyQueue.addEvent(process9event,true);
+        readyQueue.addEvent(process0event,true);
+
+        Hashtable<String, Integer> processWaitTime = new Hashtable<String, Integer>();
+
+        processWaitTime.put("0x01", 0);
+        processWaitTime.put("0x02", 0);
+        processWaitTime.put("0x03", 0);
+        processWaitTime.put("0x04", 0);
+        processWaitTime.put("0x05", 0);
+        processWaitTime.put("0x06", 0);
+        processWaitTime.put("0x07", 0);
+        processWaitTime.put("0x08", 0);
+        processWaitTime.put("0x09", 0);
+        processWaitTime.put("0x00", 0);
+
         System.out.println("Initiated Queue, size: "+ readyQueue.getEventSize());
 
         int clock = 0;
@@ -96,36 +108,45 @@ public class Main {
 
         while(true){
 
-            System.out.println(clock);
+            if(clock%50000 == 0){
+                System.out.println(clock);
+            }
+
             //System.out.println("CPU device: ");
             if ((readyQueue.getEventSize() > 0) & (CPUdevice.getEventSize() == 0)){
                 // if CPU is empty(available) and there is process in queue
-                currentEvent = (pcbEvent) readyQueue.processCurrentEvent();
+                // Test differenct Scheduling ALGO here:::
+                currentEvent = (pcbEvent) readyQueue.processCurrentEvent(ScheduleAlgorithm);
                 currentEvent.execute(); //this method should generate required event time using random generator
                 currentEvent.setTS(currentEvent.getEventTime() + clock + 1);
+                GanttChart.add(currentEvent.getEventTime());
                 CPUdevice.addEvent(currentEvent,true);
             }
             else if (CPUdevice.getEventSize() > 0){
                 //check if current pcb in CPUdevice is finished now:
                 if (clock == CPUdevice.peekCurrentEvent().getTS()){
-                    currentEvent = (pcbEvent) CPUdevice.processCurrentEvent();
+                    currentEvent = (pcbEvent) CPUdevice.processCurrentEvent("FCFS");
+                    CPU_executedProcess = CPU_executedProcess + 1;
                     if(currentEvent.getProcess().getStatus() != "Complete"){
                         ioQueue.addEvent(currentEvent,true);
                     }
                 }else{
                     //pcb in CPU is still running
-                    System.out.println("CPU: Running");
+                    //System.out.println("CPU: Running");
                 }
             }
             else {
                 //no pcb in CPU ready Queue now, move on for now
-                System.out.println("CPU Queue Empty");
+                //System.out.println("CPU Queue Empty");
+                if ((readyQueue.getEventSize() == 0) & (CPUdevice.getEventSize() == 0)){
+                    CPU_idleTime = CPU_idleTime + 1; //CPU now in idle
+                }
             }
 
             //System.out.println("IO device: ");
             if ((ioQueue.getEventSize() > 0) & (IOdevice.getEventSize() == 0)){
                 // if CPU is empty(available) and there is process in queue
-                currentEvent = (pcbEvent) ioQueue.processCurrentEvent();
+                currentEvent = (pcbEvent) ioQueue.processCurrentEvent("FCFS");
                 currentEvent.execute(); //this method should generate required event time using random generator
                 currentEvent.setTS(currentEvent.getEventTime() + clock + 1);
                 IOdevice.addEvent(currentEvent,true);
@@ -133,186 +154,24 @@ public class Main {
             else if (IOdevice.getEventSize() > 0){
                 //check if current pcb in IO device is finished
                 if (clock == IOdevice.peekCurrentEvent().getTS()){
-                    currentEvent = (pcbEvent) IOdevice.processCurrentEvent();
+                    currentEvent = (pcbEvent) IOdevice.processCurrentEvent("FCFS");
                     if(currentEvent.getProcess().getStatus() != "Complete"){
                         readyQueue.addEvent(currentEvent,true);
                     }
                 }else{
                     //pcb in IO is still running
-                    System.out.println("IO: Running");
+                    //System.out.println("IO: Running");
                 }
             }
             else {
                 //no pcb in CPU ready Queue now, move on for now
-                System.out.println("IO Queue Empty");
+                //System.out.println("IO Queue Empty");
             }
 
-            /* bad design
-            if (readyQueue.getEventSize() > 0){
-                currentEvent = (pcbEvent) readyQueue.peekCurrentEvent();
-                    if(clock == currentEvent.getTS()){
-                        System.out.println("TS: " + clock);
-                        System.out.println("----time to process current event at head of queue");
-                        currentEvent = (pcbEvent) readyQueue.processCurrentEvent();
-                        System.out.println("----current event " + currentEvent.getEventType());
-                        System.out.println("----current event process " + currentEvent.getProcess().getProcessID());
-                        nextEvent = currentEvent.execute();
-                        CPUtime = currentEvent.getEventTime();
-                        System.out.println("----current event finish TS (nextEvent TS) " + nextEvent.getTS());
-                        System.out.println("----next event " + nextEvent.getEventType());
-                        System.out.println("----current(to be finished) event eventTime " + CPUtime);
-
-                        //updating all queue based on newEvent type
-                        nextEventType = nextEvent.getEventType();
-
-                        System.out.println("----freeze all remaining event in current queue for " + CPUtime);
-                        if (nextEventType == "IO"){
-                            readyQueue.freezeEventList(CPUtime);
-                            System.out.println("----addjusting TS for nextEvent based on tail event before eventList.add() , new TS = tail TS + 1"); // +1 to avoid arbitrary ordering
-                            if(ioQueue.getEventSize() > 0){
-                                tailEvent = ioQueue.peekLastEvent();
-                                nextEvent.setTS(tailEvent.getTS() + 1);
-                            }else{
-                                nextEvent.setTS(nextEvent.getTS() + 1);
-                            }
-                            ioQueue.addEvent(nextEvent,true);
-                        }else{
-                            ioQueue.freezeEventList(CPUtime);
-                            System.out.println("----addjusting TS for nextEvent based on tail event before eventList.add() , new TS = tail TS + 1"); // +1 to avoid arbitrary ordering
-                            if(readyQueue.getEventSize() > 0){
-                                tailEvent = readyQueue.peekLastEvent();
-                                nextEvent.setTS(tailEvent.getTS() + 1);
-                            }else{
-                                nextEvent.setTS(nextEvent.getTS() + 1);
-                            }
-
-                            if (nextEvent.getProcess().getStatus() != "Complete"){
-                                readyQueue.addEvent(nextEvent,true);
-                            }else{
-                                System.out.println("------process COMPLETED, do not adding back to any queue");
-                                continue;
-                            }
-                        }
-                        //check queue
-                        System.out.println("Current CPU Queue Size " + readyQueue.getEventSize());
-                        System.out.println("Current I/O Queue Size " + ioQueue.getEventSize());
-                        System.out.print("CPU Queue: |-> ");
-                        for (pcbEvent tmpEvent : readyQueue.getAllEvents()) {
-                            String processID = tmpEvent.getProcess().getProcessID();
-                            System.out.print(processID + "," + tmpEvent.getTS() + " -> ");
-                        }
-                        System.out.println(" | TAIL ");
-
-                        System.out.print("I/O Queue: |-> ");
-                        for (pcbEvent tmpEvent : ioQueue.getAllEvents()) {
-                            String processID = tmpEvent.getProcess().getProcessID();
-                            System.out.print(processID + "," + tmpEvent.getTS() + " -> ");
-                        }
-                        System.out.println(" | TAIL ");
-
-                        System.out.println(" *************************** ");
-                }
-            }
-            if (ioQueue.getEventSize() > 0){
-                currentEvent = (pcbEvent) ioQueue.peekCurrentEvent();
-                if (clock == currentEvent.getTS()){
-                    System.out.println("TS: " + clock);
-                    System.out.println("----time to process current event at head of queue");
-                    currentEvent = (pcbEvent) ioQueue.processCurrentEvent();
-                    System.out.println("----current event " + currentEvent.getEventType());
-                    System.out.println("----current event process " + currentEvent.getProcess().getProcessID());
-                    nextEvent = currentEvent.execute();
-                    CPUtime = currentEvent.getEventTime();
-                    System.out.println("----current event finish TS (nextEvent TS) " + nextEvent.getTS());
-                    System.out.println("----next event " + nextEvent.getEventType());
-                    System.out.println("----current(to be finished) event eventTime " + CPUtime);
-
-                    //updating all queue based on newEvent type
-                    nextEventType = nextEvent.getEventType();
-
-                    System.out.println("----freeze all remaining event in current queue for " + CPUtime);
-                    if (nextEventType == "IO"){
-                        readyQueue.freezeEventList(CPUtime);
-                        System.out.println("----addjusting TS for nextEvent based on tail event before eventList.add() , new TS = tail TS + 1"); // +1 to avoid arbitrary ordering
-                        if(ioQueue.getEventSize() > 0){
-                            tailEvent = ioQueue.peekLastEvent();
-                            nextEvent.setTS(tailEvent.getTS() + 1);
-                        }else{
-                            nextEvent.setTS(nextEvent.getTS() + 1);
-                        }
-                        ioQueue.addEvent(nextEvent,true);
-                    }else{
-                        ioQueue.freezeEventList(CPUtime);
-                        System.out.println("----addjusting TS for nextEvent based on tail event before eventList.add() , new TS = tail TS + 1"); // +1 to avoid arbitrary ordering
-                        if(readyQueue.getEventSize() > 0){
-                            tailEvent = readyQueue.peekLastEvent();
-                            nextEvent.setTS(tailEvent.getTS() + 1);
-                        }else{
-                            nextEvent.setTS(nextEvent.getTS() + 1);
-                        }
-
-                        if (nextEvent.getProcess().getStatus() != "Complete"){
-                            readyQueue.addEvent(nextEvent,true);
-                        }else{
-                            System.out.println("------process COMPLETED, do not adding back to any queue");
-                            continue;
-                        }
-                    }
-                    System.out.println("Current CPU Queue Size " + readyQueue.getEventSize());
-                    System.out.println("Current I/O Queue Size " + ioQueue.getEventSize());
-                    System.out.print("CPU Queue: |-> ");
-                    for (pcbEvent tmpEvent : readyQueue.getAllEvents()) {
-                        String processID = tmpEvent.getProcess().getProcessID();
-                        System.out.print(processID + "," + tmpEvent.getTS() + " -> ");
-                    }
-                    System.out.println(" | TAIL ");
-
-                    System.out.print("I/O Queue: |-> ");
-                    for (pcbEvent tmpEvent : ioQueue.getAllEvents()) {
-                        String processID = tmpEvent.getProcess().getProcessID();
-                        System.out.print(processID + "," + tmpEvent.getTS() + " -> ");
-                    }
-                    System.out.println(" | TAIL ");
-
-                    System.out.println(" *************************** ");
-                }
-            }
-            */
-
-            //Print out each iteration status
-            //System.out.println("Current CPU Queue Size " + readyQueue.getEventSize());
-            //System.out.println("Current I/O Queue Size " + ioQueue.getEventSize());
-            /*
-            System.out.print("CPU Queue: |-> ");
             for (pcbEvent tmpEvent : readyQueue.getAllEvents()) {
                 String processID = tmpEvent.getProcess().getProcessID();
-                System.out.print(processID + "," + tmpEvent.getProcess().getExecutionTime() + "," + tmpEvent.getTS() + " -> ");
+                processWaitTime.put(processID, processWaitTime.get(processID) + 1);
             }
-            System.out.println(" | TAIL ");
-
-            System.out.print("I/O Queue: |-> ");
-            for (pcbEvent tmpEvent : ioQueue.getAllEvents()) {
-                String processID = tmpEvent.getProcess().getProcessID();
-                System.out.print(processID + "," + tmpEvent.getProcess().getExecutionTime() + "," + tmpEvent.getTS() + " -> ");
-            }
-            System.out.println(" | TAIL ");
-
-            System.out.print("CPU Device: |-> ");
-            for (pcbEvent tmpEvent : CPUdevice.getAllEvents()) {
-                String processID = tmpEvent.getProcess().getProcessID();
-                System.out.print(processID + "," + tmpEvent.getProcess().getExecutionTime() + "," + tmpEvent.getTS() + " -> ");
-            }
-            System.out.println(" | TAIL ");
-
-            System.out.print("IO Device: |-> ");
-            for (pcbEvent tmpEvent : IOdevice.getAllEvents()) {
-                String processID = tmpEvent.getProcess().getProcessID();
-                System.out.print(processID + "," + tmpEvent.getProcess().getExecutionTime() + "," + tmpEvent.getTS() + " -> ");
-            }
-            System.out.println(" | TAIL ");
-
-            System.out.println("**************************************** ");
-            */
 
             //early stop:
             if((readyQueue.getEventSize() == 0) & (ioQueue.getEventSize() == 0) & (CPUdevice.getEventSize() == 0) & (IOdevice.getEventSize() == 0)){
@@ -322,7 +181,31 @@ public class Main {
         }
 
 
+        System.out.println("Total Clock Time " + clock);
+        System.out.println("Total CPU Idle Time " + CPU_idleTime);
+        System.out.println("CPU ThroughPut (per second) " + (double)CPU_executedProcess/(double)clock/1000.0);
+        System.out.println("processID|Total Waiting for CPU");
+        for (String pid : processWaitTime.keySet()){
+            System.out.println(pid + "|" + processWaitTime.get(pid));
+        }
 
-
+        writer.println("Scheduling Algo: " + ScheduleAlgorithm);
+        writer.println("Total Clock Time " + clock);
+        writer.println("Total CPU Idle Time " + CPU_idleTime);
+        writer.println("CPU ThroughPut (per second) " + (double)CPU_executedProcess/(double)clock/1000.0);
+        writer.println("-------------------------------");
+        writer.println("processID|Total Waiting for CPU");
+        double totalWait = 0.0;
+        for (String pid : processWaitTime.keySet()){
+            writer.println(pid + "|" + processWaitTime.get(pid));
+            totalWait = totalWait + (double) processWaitTime.get(pid);
+        }
+        writer.println("Average Wait time: " + totalWait/10.0);
+        writer.println("-------------------------------");
+        writer.println("----------GanttChart-----------");
+        for(Integer t : GanttChart){
+            writer.print(t + "|");
+        }
+        writer.close();
     }
 }

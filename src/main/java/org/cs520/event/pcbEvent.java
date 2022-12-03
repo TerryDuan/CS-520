@@ -10,6 +10,8 @@ public class pcbEvent extends event  {
         super(t, Type);
         processBlock = p;
         EventDetails.put("ProcessID", processBlock.getProcessID());
+        int ioBurstT = processBlock.getNextIOInterval();
+        this.eventTime = ioBurstT;
     }
 
     public void addDetail(String Key, String Value) {
@@ -25,7 +27,7 @@ public class pcbEvent extends event  {
     public void setTS(int newTS){this.ts = newTS;}
 
     public int getEventTime() {
-        System.out.println("--------> current eventTime "+eventTime);
+        //System.out.println("--------> current eventTime "+eventTime);
         return (int) this.eventTime;
     };
 
@@ -48,7 +50,7 @@ public class pcbEvent extends event  {
         }else if (EventType == "CPU"){
             //if current event is CPU event, we get a random number for CPU burst time and create a new IO event or Complete Event
             processBlock.setStatus("Ready");
-            int execT = processBlock.getExecutionTime();
+            int execT = processBlock.getExecutionTime(); //get current remaining execution time
             int ioBurstT = processBlock.getNextIOInterval();
             this.eventTime = ioBurstT;
             execT = execT - eventTime;

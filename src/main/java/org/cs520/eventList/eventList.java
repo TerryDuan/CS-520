@@ -38,7 +38,7 @@ abstract public class eventList {
         return this.EventDLL.get(ts);
     }
 
-    abstract public event processCurrentEvent();
+    abstract public event processCurrentEvent(String ScheduleAlgo);
 
     abstract public event peekCurrentEvent();
 }

@@ -30,8 +30,24 @@ public class pcbEventList extends eventList{
     public pcbEvent peekCurrentEvent() {
         return EventDLL.peek();
     }
-    public pcbEvent processCurrentEvent() {
-        return EventDLL.poll();
+    public pcbEvent processCurrentEvent(String ScheduleAlgo) {
+        /*
+        * We can implement the SJF and RR algo here
+        * By default, poll() is same as FCFS
+        * */
+        if(ScheduleAlgo == "SJF"){
+            Collections.sort(EventDLL, new Comparator<pcbEvent>() {
+                        @Override
+                        public int compare(pcbEvent s1, pcbEvent s2) {
+                            return s1.getEventTime() - s2.getEventTime();
+                        }
+                    }
+            );
+            return EventDLL.poll();
+        }else{
+            return EventDLL.poll();
+        }
+
     }
 
     public void freezeEventList(int freezeT){
@@ -57,7 +73,7 @@ public class pcbEventList extends eventList{
                         }
                     }
             );
-            System.out.println("------->Event Added and reordered based on TS arrival time");
+            //System.out.println("------->Event Added and reordered based on TS arrival time");
         }else{
             //SJF, add and sort by pcb's remaining execution time
             EventDLL.add(newEvent);
@@ -68,7 +84,7 @@ public class pcbEventList extends eventList{
                         }
                     }
             );
-            System.out.println("------->Event Added and reordered based on Remaining Execution time (SJF)");
+            //System.out.println("------->Event Added and reordered based on Remaining Execution time (SJF)");
         }
     }
 
