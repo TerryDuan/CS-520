@@ -19,8 +19,9 @@ public class Main {
         int CPU_idleTime = 0;
         int CPU_executedProcess = 0;
         String ScheduleAlgorithm = "FCFS"; //"FCFS" "SJF"
-        int Quantum = 30; //1000000
+        int Quantum = 50; //1000000
         List<Integer> GanttChart = new ArrayList<Integer>();
+        int CPU_runTime = 0;
         PrintWriter writer = new PrintWriter("D:\\Files\\CS\\CS520_Project\\log\\Simulation_" + fileName + ".log", "UTF-8");
 
         System.out.println("Start Simulation");
@@ -121,13 +122,14 @@ public class Main {
                 currentEvent = (pcbEvent) readyQueue.processCurrentEvent(ScheduleAlgorithm);
                 currentEvent.execute(clock); //this method should generate required event time using random generator
                 currentEvent.setTS(currentEvent.getEventTime() + clock + 1);
-                GanttChart.add(currentEvent.getEventTime());
                 CPUdevice.addEvent(currentEvent,true);
             }
             else if (CPUdevice.getEventSize() > 0){
                 //check if current pcb in CPUdevice is finished now:
                 if (clock == CPUdevice.peekCurrentEvent().getTS()){
                     currentEvent = (pcbEvent) CPUdevice.processCurrentEvent("FCFS");
+                    GanttChart.add(CPU_runTime);
+                    CPU_runTime = 0;
                     CPU_executedProcess = CPU_executedProcess + 1;
                     if(currentEvent.getProcess().getStatus() != "Complete"){
                         ioQueue.addEvent(currentEvent,true);
@@ -135,6 +137,8 @@ public class Main {
                 }else if((CPUdevice.peekCurrentEvent().getEventTime() - CPUdevice.peekCurrentEvent().getTS() + clock) > Quantum){
                     //if the current process being running for too long, remove it from CPUdevice
                     currentEvent = (pcbEvent) CPUdevice.processCurrentEvent("FCFS");
+                    GanttChart.add(CPU_runTime);
+                    CPU_runTime = 0;
                     //System.out.println("--->current process " + currentEvent.getProcess().getProcessID() + " Remaining execT " + currentEvent.getProcess().getExecutionTime() + " EventTime : " + currentEvent.getEventTime());
                     //overwrite the remaining execution time
                     tempProcess = currentEvent.getProcess();
@@ -146,6 +150,7 @@ public class Main {
                     readyQueue.addEvent(currentEvent,true);
                 }else{
                     //pcb in CPU is still running
+                    CPU_runTime = CPU_runTime + 1;
                     //System.out.println("CPU: Running");
                 }
             }
@@ -226,7 +231,9 @@ public class Main {
         writer.println("Scheduling Algo: " + ScheduleAlgorithm);
         writer.println("Quantum for RR " + Quantum);
         writer.println("Total Clock Time " + clock);
-        writer.println("Total CPU Idle Time " + CPU_idleTime);
+        writer.println("Total CPU Idle Time " +  CPU_idleTime);
+        double utilization = 1.0 - ((double)CPU_idleTime/(double)clock);
+        writer.println("Total CPU Untilization Rate " + utilization);
         writer.println("CPU ThroughPut (per second) " + (double)CPU_executedProcess/(double)clock/1000.0);
         writer.println("-------------------------------");
         writer.println("processID|Total Waiting for CPU");
