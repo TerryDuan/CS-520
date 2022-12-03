@@ -18,7 +18,8 @@ public class Main {
         String fileName = new SimpleDateFormat("yyyyMMddHHmm'.txt'").format(new Date());
         int CPU_idleTime = 0;
         int CPU_executedProcess = 0;
-        String ScheduleAlgorithm = "SJF"; //"FCFS"
+        String ScheduleAlgorithm = "FCFS"; //"FCFS" "SJF"
+        int Quantum = 30; //1000000
         List<Integer> GanttChart = new ArrayList<Integer>();
         PrintWriter writer = new PrintWriter("D:\\Files\\CS\\CS520_Project\\log\\Simulation_" + fileName + ".log", "UTF-8");
 
@@ -105,6 +106,7 @@ public class Main {
         pcbEvent tailEvent;
         int CPUtime;
         String nextEventType;
+        pcb tempProcess;
 
         while(true){
 
@@ -117,7 +119,7 @@ public class Main {
                 // if CPU is empty(available) and there is process in queue
                 // Test differenct Scheduling ALGO here:::
                 currentEvent = (pcbEvent) readyQueue.processCurrentEvent(ScheduleAlgorithm);
-                currentEvent.execute(); //this method should generate required event time using random generator
+                currentEvent.execute(clock); //this method should generate required event time using random generator
                 currentEvent.setTS(currentEvent.getEventTime() + clock + 1);
                 GanttChart.add(currentEvent.getEventTime());
                 CPUdevice.addEvent(currentEvent,true);
@@ -130,6 +132,18 @@ public class Main {
                     if(currentEvent.getProcess().getStatus() != "Complete"){
                         ioQueue.addEvent(currentEvent,true);
                     }
+                }else if((CPUdevice.peekCurrentEvent().getEventTime() - CPUdevice.peekCurrentEvent().getTS() + clock) > Quantum){
+                    //if the current process being running for too long, remove it from CPUdevice
+                    currentEvent = (pcbEvent) CPUdevice.processCurrentEvent("FCFS");
+                    //System.out.println("--->current process " + currentEvent.getProcess().getProcessID() + " Remaining execT " + currentEvent.getProcess().getExecutionTime() + " EventTime : " + currentEvent.getEventTime());
+                    //overwrite the remaining execution time
+                    tempProcess = currentEvent.getProcess();
+                    tempProcess.setExecutionTime(tempProcess.getExecutionTime() + (currentEvent.getTS() - clock));
+                    currentEvent.setProcess(tempProcess);
+                    //System.out.println("--->moved back to cpu Queue, current process " + currentEvent.getProcess().getProcessID() + " Remaining execT " + currentEvent.getProcess().getExecutionTime());
+
+                    //add it back to cpu Queue
+                    readyQueue.addEvent(currentEvent,true);
                 }else{
                     //pcb in CPU is still running
                     //System.out.println("CPU: Running");
@@ -147,7 +161,7 @@ public class Main {
             if ((ioQueue.getEventSize() > 0) & (IOdevice.getEventSize() == 0)){
                 // if CPU is empty(available) and there is process in queue
                 currentEvent = (pcbEvent) ioQueue.processCurrentEvent("FCFS");
-                currentEvent.execute(); //this method should generate required event time using random generator
+                currentEvent.execute(clock); //this method should generate required event time using random generator
                 currentEvent.setTS(currentEvent.getEventTime() + clock + 1);
                 IOdevice.addEvent(currentEvent,true);
             }
@@ -173,6 +187,26 @@ public class Main {
                 processWaitTime.put(processID, processWaitTime.get(processID) + 1);
             }
 
+            //System.out.println("readyQueue " + readyQueue.getEventSize());
+            //System.out.println("CPUdevice " + CPUdevice.getEventSize());
+            //System.out.println("ioQueue " + ioQueue.getEventSize());
+            //System.out.println("IOdevice " + IOdevice.getEventSize());
+            /*
+            System.out.print(clock);
+            if (CPUdevice.getEventSize() > 0){
+                System.out.print(" CPU Device: |-> " + CPUdevice.peekCurrentEvent().getProcess().getProcessID() + ", TS " + CPUdevice.peekCurrentEvent().getTS() + ", ExecT " + CPUdevice.peekCurrentEvent().getProcess().getExecutionTime());
+            }
+            else{
+                System.out.print(" CPU Device: |->| ");
+            }
+            System.out.print(" CPU Queue: |-> ");
+            for (pcbEvent tmpEvent : readyQueue.getAllEvents()) {
+                String processID = tmpEvent.getProcess().getProcessID();
+                System.out.print(processID + "," + tmpEvent.getProcess().getExecutionTime() + "," + tmpEvent.getTS() + " -> ");
+            }
+            System.out.println(" | TAIL ");
+            */
+
             //early stop:
             if((readyQueue.getEventSize() == 0) & (ioQueue.getEventSize() == 0) & (CPUdevice.getEventSize() == 0) & (IOdevice.getEventSize() == 0)){
                 break;
@@ -190,6 +224,7 @@ public class Main {
         }
 
         writer.println("Scheduling Algo: " + ScheduleAlgorithm);
+        writer.println("Quantum for RR " + Quantum);
         writer.println("Total Clock Time " + clock);
         writer.println("Total CPU Idle Time " + CPU_idleTime);
         writer.println("CPU ThroughPut (per second) " + (double)CPU_executedProcess/(double)clock/1000.0);
