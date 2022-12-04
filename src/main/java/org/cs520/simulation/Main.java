@@ -19,10 +19,10 @@ public class Main {
         int CPU_idleTime = 0;
         int CPU_executedProcess = 0;
         String ScheduleAlgorithm = "FCFS"; //"FCFS" "SJF"
-        int Quantum = 50; //1000000
+        int Quantum = 30; //1000000
         List<Integer> GanttChart = new ArrayList<Integer>();
         int CPU_runTime = 0;
-        PrintWriter writer = new PrintWriter("D:\\Files\\CS\\CS520_Project\\log\\Simulation_" + fileName + ".log", "UTF-8");
+        PrintWriter writer = new PrintWriter("D:\\Files\\CS\\CS520_Project\\log\\Simulation_" + ScheduleAlgorithm + "_RR" + Quantum + "_" + fileName + ".log", "UTF-8");
 
         System.out.println("Start Simulation");
 
