@@ -40,5 +40,5 @@ abstract public class eventList {
 
     abstract public event processCurrentEvent(String ScheduleAlgo);
 
-    abstract public event peekCurrentEvent();
+    abstract public event peekCurrentEvent(String ScheduleAlgo);
 }

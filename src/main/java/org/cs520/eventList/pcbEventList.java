@@ -27,9 +27,25 @@ public class pcbEventList extends eventList{
     public pcbEvent peekLastEvent(){
         return EventDLL.peekLast();
     }
-    public pcbEvent peekCurrentEvent() {
-        return EventDLL.peek();
+    public pcbEvent peekCurrentEvent(String ScheduleAlgo) {
+        /*
+         * We can implement the SJF and RR algo here
+         * By default, poll() is same as FCFS
+         * */
+        if(ScheduleAlgo == "SJF"){
+            Collections.sort(EventDLL, new Comparator<pcbEvent>() {
+                        @Override
+                        public int compare(pcbEvent s1, pcbEvent s2) {
+                            return s1.getEventTime() - s2.getEventTime();
+                        }
+                    }
+            );
+            return EventDLL.peek();
+        }else{
+            return EventDLL.peek();
+        }
     }
+
     public pcbEvent processCurrentEvent(String ScheduleAlgo) {
         /*
         * We can implement the SJF and RR algo here
@@ -59,32 +75,16 @@ public class pcbEventList extends eventList{
         }
     }
 
-    public void addEvent(pcbEvent newEvent, boolean FIFO){
-        if(FIFO){
-            //add and sort the list based on TS
-            //add event based on ts
-            //scan the EventDLL and insert the event to 'right position'
-            EventDLL.add(newEvent);//EventDLL.add(ts, event);
-            //Whenever we add new future event, we need to sort remaining list
-            Collections.sort(EventDLL, new Comparator<pcbEvent>() {
-                        @Override
-                        public int compare(pcbEvent s1, pcbEvent s2) {
-                            return s1.getTS() - s2.getTS();
-                        }
-                    }
-            );
-            //System.out.println("------->Event Added and reordered based on TS arrival time");
-        }else{
-            //SJF, add and sort by pcb's remaining execution time
+    public void addEvent(pcbEvent newEvent, int EventTime, int ts){
+        if(EventTime < 0){
+            // if eventTime is invalid, use execute to generate a new one
+            // this is for adding to CPU and IO device
+            newEvent.execute(ts+1); //use execute to generate EventTime, execute also update EventType if needed.
             EventDLL.add(newEvent);
-            Collections.sort(EventDLL, new Comparator<pcbEvent>() {
-                        @Override
-                        public int compare(pcbEvent s1, pcbEvent s2) {
-                            return s1.getProcess().getExecutionTime() - s2.getProcess().getExecutionTime();
-                        }
-                    }
-            );
-            //System.out.println("------->Event Added and reordered based on Remaining Execution time (SJF)");
+        }else{
+            newEvent.setTS(ts+1);
+            newEvent.setEventTime(EventTime);
+            EventDLL.add(newEvent);
         }
     }
 

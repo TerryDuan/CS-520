@@ -26,6 +26,8 @@ public class pcbEvent extends event  {
     }
     public void setTS(int newTS){this.ts = newTS;}
 
+    public void setEventTime(int eventT){this.eventTime = eventT;}
+
     public int getEventTime() {
         //System.out.println("--------> current eventTime "+eventTime);
         return (int) this.eventTime;
@@ -33,6 +35,10 @@ public class pcbEvent extends event  {
 
     public String getEventType(){
         return this.EventType;
+    }
+
+    public void setEventType(String eventtype){
+        this.EventType = eventtype;
     }
 
     public void setProcess(pcb tempProcess){
@@ -48,9 +54,9 @@ public class pcbEvent extends event  {
         if (EventType == "IO"){
             //if current event is IO event, we create next CPU event for this processID and add 60ms for i/o execution
             processBlock.setStatus("Ready"); //always ready after IO
-            this.eventTime = 60;
+            this.eventTime = 120;
             this.ts = currentTS + this.eventTime;
-            this.EventType = "CPU";
+            //this.EventType = "CPU";
         }else if (EventType == "CPU"){
             //if current event is CPU event, we get a random number for CPU burst time and create a new IO event or Complete Event
             processBlock.setStatus("Ready");
@@ -61,7 +67,7 @@ public class pcbEvent extends event  {
             if (execT > 0){
                 processBlock.setExecutionTime(execT);
                 this.ts = currentTS + this.eventTime;
-                this.EventType = "IO";
+                //this.EventType = "IO";
                 processBlock.setExecutionTime(execT);
             }else{
                 //process will complete before next IO request
