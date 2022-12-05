@@ -54,7 +54,7 @@ public class pcbEvent extends event  {
         if (EventType == "IO"){
             //if current event is IO event, we create next CPU event for this processID and add 60ms for i/o execution
             processBlock.setStatus("Ready"); //always ready after IO
-            this.eventTime = 120;
+            this.eventTime = 60;
             this.ts = currentTS + this.eventTime;
             //this.EventType = "CPU";
         }else if (EventType == "CPU"){
